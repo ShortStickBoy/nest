@@ -3,6 +3,7 @@ package com.sunzn.nest.sample;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import com.sunzn.nest.library.nested.QMUIContinuousNestedScrollLayout;
 import com.sunzn.nest.library.nested.QMUIContinuousNestedTopAreaBehavior;
 import com.sunzn.nest.library.nested.QMUIContinuousNestedTopWebView;
 import com.sunzn.nest.library.webview.QMUIWebView;
+import com.sunzn.nest.library.webview.QMUIWebViewClient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +57,8 @@ public class NestedActivity1 extends AppCompatActivity {
         recyclerViewLp.setBehavior(new QMUIContinuousNestedBottomAreaBehavior());
         mCoordinatorLayout.setBottomAreaView(mRecyclerView, recyclerViewLp);
 
-        mNestedWebView.loadUrl("https://mp.weixin.qq.com/s/zgfLOMD2JfZJKfHx-5BsBg");
+        mNestedWebView.setWebViewClient(new QMUIWebViewClient(false, true));
+        mNestedWebView.loadUrl("https://juejin.im/post/5e68b6ae6fb9a07cdb468722");
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
             @Override
