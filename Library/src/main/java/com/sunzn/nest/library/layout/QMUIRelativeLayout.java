@@ -22,35 +22,35 @@ import android.util.AttributeSet;
 
 import androidx.annotation.ColorInt;
 
-import com.sunzn.nest.library.alpha.QMUIAlphaLinearLayout;
+import com.sunzn.nest.library.alpha.QMUIAlphaRelativeLayout;
 
 /**
  * @author cginechen
  * @date 2017-03-10
  */
 
-public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayout {
+public class QMUIRelativeLayout extends QMUIAlphaRelativeLayout implements IQMUILayout {
     private QMUILayoutHelper mLayoutHelper;
 
-    public QMUILinearLayout(Context context) {
+    public QMUIRelativeLayout(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public QMUILinearLayout(Context context, AttributeSet attrs) {
+    public QMUIRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);
     }
 
-    public QMUILinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public QMUIRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         mLayoutHelper = new QMUILayoutHelper(context, attrs, defStyleAttr, this);
-        setChangeAlphaWhenPress(false);
         setChangeAlphaWhenDisable(false);
+        setChangeAlphaWhenPress(false);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayo
 
     @Override
     public void setRadiusAndShadow(int radius, int hideRadiusSide, int shadowElevation, int shadowColor, float shadowAlpha) {
-        mLayoutHelper.setRadiusAndShadow(radius, hideRadiusSide, shadowElevation,  shadowColor, shadowAlpha);
+        mLayoutHelper.setRadiusAndShadow(radius, hideRadiusSide, shadowElevation, shadowColor, shadowAlpha);
     }
 
     @Override
@@ -175,6 +175,16 @@ public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayo
     }
 
     @Override
+    public void setHideRadiusSide(int hideRadiusSide) {
+        mLayoutHelper.setHideRadiusSide(hideRadiusSide);
+    }
+
+    @Override
+    public int getHideRadiusSide() {
+        return mLayoutHelper.getHideRadiusSide();
+    }
+
+    @Override
     public void setBorderColor(@ColorInt int borderColor) {
         mLayoutHelper.setBorderColor(borderColor);
         invalidate();
@@ -190,16 +200,6 @@ public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayo
     public void setShowBorderOnlyBeforeL(boolean showBorderOnlyBeforeL) {
         mLayoutHelper.setShowBorderOnlyBeforeL(showBorderOnlyBeforeL);
         invalidate();
-    }
-
-    @Override
-    public void setHideRadiusSide(int hideRadiusSide) {
-        mLayoutHelper.setHideRadiusSide(hideRadiusSide);
-    }
-
-    @Override
-    public int getHideRadiusSide() {
-        return mLayoutHelper.getHideRadiusSide();
     }
 
     @Override
@@ -231,36 +231,14 @@ public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayo
     }
 
     @Override
-    public void updateBottomSeparatorColor(int color) {
-        mLayoutHelper.updateBottomSeparatorColor(color);
-    }
-
-    @Override
-    public void updateLeftSeparatorColor(int color) {
-        mLayoutHelper.updateLeftSeparatorColor(color);
-    }
-
-    @Override
-    public void updateRightSeparatorColor(int color) {
-        mLayoutHelper.updateRightSeparatorColor(color);
-    }
-
-    @Override
-    public void updateTopSeparatorColor(int color) {
-        mLayoutHelper.updateTopSeparatorColor(color);
-    }
-
-    @Override
     public void setShadowElevation(int elevation) {
         mLayoutHelper.setShadowElevation(elevation);
     }
 
-    @Override
     public int getShadowElevation() {
         return mLayoutHelper.getShadowElevation();
     }
 
-    @Override
     public void setShadowAlpha(float shadowAlpha) {
         mLayoutHelper.setShadowAlpha(shadowAlpha);
     }
@@ -283,6 +261,26 @@ public class QMUILinearLayout extends QMUIAlphaLinearLayout implements IQMUILayo
     @Override
     public float getShadowAlpha() {
         return mLayoutHelper.getShadowAlpha();
+    }
+
+    @Override
+    public void updateBottomSeparatorColor(int color) {
+        mLayoutHelper.updateBottomSeparatorColor(color);
+    }
+
+    @Override
+    public void updateLeftSeparatorColor(int color) {
+        mLayoutHelper.updateLeftSeparatorColor(color);
+    }
+
+    @Override
+    public void updateRightSeparatorColor(int color) {
+        mLayoutHelper.updateRightSeparatorColor(color);
+    }
+
+    @Override
+    public void updateTopSeparatorColor(int color) {
+        mLayoutHelper.updateTopSeparatorColor(color);
     }
 
     @Override

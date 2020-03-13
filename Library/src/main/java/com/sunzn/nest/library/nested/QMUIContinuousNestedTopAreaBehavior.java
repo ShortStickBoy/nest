@@ -64,7 +64,8 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
     }
 
     @Override
-    public boolean onInterceptTouchEvent(@NonNull CoordinatorLayout parent, @NonNull View child, @NonNull MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull CoordinatorLayout parent,
+                                         @NonNull View child, @NonNull MotionEvent ev) {
         if (touchSlop < 0) {
             touchSlop = ViewConfiguration.get(parent.getContext()).getScaledTouchSlop();
         }
@@ -234,7 +235,8 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
         if (child instanceof IQMUIContinuousNestedTopView) {
             unConsumed = ((IQMUIContinuousNestedTopView) child).consumeScroll(unConsumed);
         }
-        onNestedScroll(parent, child, child, 0, dy - unConsumed, 0, unConsumed, ViewCompat.TYPE_TOUCH);
+        onNestedScroll(parent, child, child, 0, dy - unConsumed,
+                0, unConsumed, ViewCompat.TYPE_TOUCH);
 
     }
 
@@ -263,13 +265,16 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
                 // If the measure spec doesn't specify a size, use the current height
                 availableHeight = parent.getHeight();
             }
-            final int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(availableHeight, View.MeasureSpec.AT_MOST);
+            final int heightMeasureSpec =
+                    View.MeasureSpec.makeMeasureSpec(availableHeight, View.MeasureSpec.AT_MOST);
 
-            parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed, heightMeasureSpec, heightUsed);
+            parent.onMeasureChild(
+                    child, parentWidthMeasureSpec, widthUsed, heightMeasureSpec, heightUsed);
 
 
         } else {
-            parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed, View.MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK, View.MeasureSpec.AT_MOST), heightUsed);
+            parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed,
+                    View.MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK, View.MeasureSpec.AT_MOST), heightUsed);
         }
         return true;
     }
@@ -424,8 +429,21 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
                 int unconsumedY = y - mLastFlingY;
                 mLastFlingY = y;
                 if (mCurrentParent != null && mCurrentChild != null) {
-                    scroll(mCurrentParent, mCurrentChild, unconsumedY);
-                    postOnAnimation();
+                    boolean canScroll = true;
+                    if(mCurrentParent instanceof QMUIContinuousNestedScrollLayout){
+                        QMUIContinuousNestedScrollLayout layout = (QMUIContinuousNestedScrollLayout) mCurrentParent;
+                        if(unconsumedY > 0 && layout.getCurrentScroll() >= layout.getScrollRange()){
+                            canScroll = false;
+                        }else if(unconsumedY < 0 && layout.getCurrentScroll() <= 0){
+                            canScroll = false;
+                        }
+                    }
+                    if(canScroll){
+                        scroll(mCurrentParent, mCurrentChild, unconsumedY);
+                        postOnAnimation();
+                    }else{
+                        mOverScroller.abortAnimation();
+                    }
                 }
             }
 
@@ -433,6 +451,7 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
             if (mReSchedulePostAnimationCallback) {
                 internalPostOnAnimation();
             } else {
+                mCurrentParent = null;
                 mCurrentChild = null;
                 onFlingOrScrollEnd();
             }
@@ -456,7 +475,8 @@ public class QMUIContinuousNestedTopAreaBehavior extends QMUIViewOffsetBehavior<
 
         public void fling(CoordinatorLayout parent, View child, int velocityY) {
             onFlingOrScrollStart(parent, child);
-            mOverScroller.fling(0, 0, 0, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            mOverScroller.fling(0, 0, 0, velocityY,
+                    Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
             postOnAnimation();
         }
 

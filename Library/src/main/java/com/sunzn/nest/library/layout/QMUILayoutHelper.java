@@ -84,8 +84,7 @@ public class QMUILayoutHelper implements IQMUILayout {
     private Paint mClipPaint;
     private PorterDuffXfermode mMode;
     private int mRadius;
-    private @IQMUILayout.HideRadiusSide
-    int mHideRadiusSide = HIDE_RADIUS_SIDE_NONE;
+    private @IQMUILayout.HideRadiusSide int mHideRadiusSide = HIDE_RADIUS_SIDE_NONE;
     private float[] mRadiusArray;
     private RectF mBorderRect;
     private int mBorderColor = 0;
@@ -108,6 +107,10 @@ public class QMUILayoutHelper implements IQMUILayout {
     private int mOutlineInsetBottom = 0;
 
     public QMUILayoutHelper(Context context, AttributeSet attrs, int defAttr, View owner) {
+        this(context, attrs, defAttr, 0, owner);
+    }
+
+    public QMUILayoutHelper(Context context, AttributeSet attrs, int defAttr, int defStyleRes, View owner) {
         mContext = context;
         mOwner = new WeakReference<>(owner);
         mBottomDividerColor = mTopDividerColor =
@@ -120,8 +123,8 @@ public class QMUILayoutHelper implements IQMUILayout {
 
         int radius = 0, shadow = 0;
         boolean useThemeGeneralShadowElevation = false;
-        if (null != attrs || defAttr != 0) {
-            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.QMUILayout, defAttr, 0);
+        if (null != attrs || defAttr != 0 || defStyleRes != 0) {
+            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.QMUILayout, defAttr, defStyleRes);
             int count = ta.getIndexCount();
             for (int i = 0; i < count; ++i) {
                 int index = ta.getIndex(i);
@@ -152,7 +155,7 @@ public class QMUILayoutHelper implements IQMUILayout {
                 } else if (index == R.styleable.QMUILayout_qmui_leftDividerColor) {
                     mLeftDividerColor = ta.getColor(index, mLeftDividerColor);
                 } else if (index == R.styleable.QMUILayout_qmui_leftDividerWidth) {
-                    mLeftDividerWidth = ta.getDimensionPixelSize(index, mBottomDividerHeight);
+                    mLeftDividerWidth = ta.getDimensionPixelSize(index, mLeftDividerWidth);
                 } else if (index == R.styleable.QMUILayout_qmui_leftDividerInsetTop) {
                     mLeftDividerInsetTop = ta.getDimensionPixelSize(index, mLeftDividerInsetTop);
                 } else if (index == R.styleable.QMUILayout_qmui_leftDividerInsetBottom) {
@@ -165,12 +168,6 @@ public class QMUILayoutHelper implements IQMUILayout {
                     mRightDividerInsetTop = ta.getDimensionPixelSize(index, mRightDividerInsetTop);
                 } else if (index == R.styleable.QMUILayout_qmui_rightDividerInsetBottom) {
                     mRightDividerInsetBottom = ta.getDimensionPixelSize(index, mRightDividerInsetBottom);
-                } else if (index == R.styleable.QMUILayout_qmui_borderColor) {
-                    mBorderColor = ta.getColor(index, mBorderColor);
-                } else if (index == R.styleable.QMUILayout_qmui_borderWidth) {
-                    mBorderWidth = ta.getDimensionPixelSize(index, mBorderWidth);
-                } else if (index == R.styleable.QMUILayout_qmui_radius) {
-                    radius = ta.getDimensionPixelSize(index, 0);
                 } else if (index == R.styleable.QMUILayout_qmui_outerNormalColor) {
                     mOuterNormalColor = ta.getColor(index, mOuterNormalColor);
                 } else if (index == R.styleable.QMUILayout_qmui_hideRadiusSide) {
@@ -242,6 +239,38 @@ public class QMUILayoutHelper implements IQMUILayout {
     }
 
     @Override
+    public void updateLeftSeparatorColor(int color) {
+        if (mLeftDividerColor != color) {
+            mLeftDividerColor = color;
+            invalidate();
+        }
+    }
+
+    @Override
+    public void updateBottomSeparatorColor(int color) {
+        if (mBottomDividerColor != color) {
+            mBottomDividerColor = color;
+            invalidate();
+        }
+    }
+
+    @Override
+    public void updateTopSeparatorColor(int color) {
+        if (mTopDividerColor != color) {
+            mTopDividerColor = color;
+            invalidate();
+        }
+    }
+
+    @Override
+    public void updateRightSeparatorColor(int color) {
+        if (mRightDividerColor != color) {
+            mRightDividerColor = color;
+            invalidate();
+        }
+    }
+
+    @Override
     public int getShadowElevation() {
         return mShadowElevation;
     }
@@ -284,7 +313,7 @@ public class QMUILayoutHelper implements IQMUILayout {
             return;
         }
         mShadowElevation = elevation;
-        invalidate();
+        invalidateOutline();
     }
 
     @Override
@@ -293,7 +322,7 @@ public class QMUILayoutHelper implements IQMUILayout {
             return;
         }
         mShadowAlpha = shadowAlpha;
-        invalidate();
+        invalidateOutline();
     }
 
     @Override
@@ -316,7 +345,7 @@ public class QMUILayoutHelper implements IQMUILayout {
         }
     }
 
-    private void invalidate() {
+    private void invalidateOutline() {
         if (useFeature()) {
             View owner = mOwner.get();
             if (owner == null) {
@@ -329,6 +358,14 @@ public class QMUILayoutHelper implements IQMUILayout {
             }
             owner.invalidateOutline();
         }
+    }
+
+    private void invalidate() {
+        View owner = mOwner.get();
+        if (owner == null) {
+            return;
+        }
+        owner.invalidate();
     }
 
     @Override
@@ -452,9 +489,11 @@ public class QMUILayoutHelper implements IQMUILayout {
                     outline.setAlpha(shadowAlpha);
 
                     if (mRadius <= 0) {
-                        outline.setRect(left, top, right, bottom);
+                        outline.setRect(left, top,
+                                right, bottom);
                     } else {
-                        outline.setRoundRect(left, top, right, bottom, mRadius);
+                        outline.setRoundRect(left, top,
+                                right, bottom, mRadius);
                     }
                 }
             });
@@ -506,7 +545,8 @@ public class QMUILayoutHelper implements IQMUILayout {
     }
 
     @Override
-    public void onlyShowTopDivider(int topInsetLeft, int topInsetRight, int topDividerHeight, int topDividerColor) {
+    public void onlyShowTopDivider(int topInsetLeft, int topInsetRight,
+                                   int topDividerHeight, int topDividerColor) {
         updateTopDivider(topInsetLeft, topInsetRight, topDividerHeight, topDividerColor);
         mLeftDividerWidth = 0;
         mRightDividerWidth = 0;
@@ -514,7 +554,8 @@ public class QMUILayoutHelper implements IQMUILayout {
     }
 
     @Override
-    public void onlyShowBottomDivider(int bottomInsetLeft, int bottomInsetRight, int bottomDividerHeight, int bottomDividerColor) {
+    public void onlyShowBottomDivider(int bottomInsetLeft, int bottomInsetRight,
+                                      int bottomDividerHeight, int bottomDividerColor) {
         updateBottomDivider(bottomInsetLeft, bottomInsetRight, bottomDividerHeight, bottomDividerColor);
         mLeftDividerWidth = 0;
         mRightDividerWidth = 0;
@@ -559,14 +600,16 @@ public class QMUILayoutHelper implements IQMUILayout {
 
 
     public int handleMiniWidth(int widthMeasureSpec, int measuredWidth) {
-        if (View.MeasureSpec.getMode(widthMeasureSpec) != View.MeasureSpec.EXACTLY && measuredWidth < mWidthMini) {
+        if (View.MeasureSpec.getMode(widthMeasureSpec) != View.MeasureSpec.EXACTLY
+                && measuredWidth < mWidthMini) {
             return View.MeasureSpec.makeMeasureSpec(mWidthMini, View.MeasureSpec.EXACTLY);
         }
         return widthMeasureSpec;
     }
 
     public int handleMiniHeight(int heightMeasureSpec, int measuredHeight) {
-        if (View.MeasureSpec.getMode(heightMeasureSpec) != View.MeasureSpec.EXACTLY && measuredHeight < mHeightMini) {
+        if (View.MeasureSpec.getMode(heightMeasureSpec) != View.MeasureSpec.EXACTLY
+                && measuredHeight < mHeightMini) {
             return View.MeasureSpec.makeMeasureSpec(mHeightMini, View.MeasureSpec.EXACTLY);
         }
         return heightMeasureSpec;
@@ -622,17 +665,49 @@ public class QMUILayoutHelper implements IQMUILayout {
         }
     }
 
+    @Override
+    public boolean hasTopSeparator() {
+        return mTopDividerHeight > 0;
+    }
+
+    @Override
+    public boolean hasRightSeparator() {
+        return mRightDividerWidth > 0;
+    }
+
+    @Override
+    public boolean hasBottomSeparator() {
+        return mBottomDividerHeight > 0;
+    }
+
+    @Override
+    public boolean hasLeftSeparator() {
+        return mLeftDividerWidth > 0;
+    }
+
+    @Override
+    public boolean hasBorder() {
+        return mBorderWidth > 0;
+    }
+
     public void drawDividers(Canvas canvas, int w, int h) {
-        if (mDividerPaint == null && (mTopDividerHeight > 0 || mBottomDividerHeight > 0 || mLeftDividerWidth > 0 || mRightDividerWidth > 0)) {
+        View owner = mOwner.get();
+        if(owner == null){
+            return;
+        }
+        if (mDividerPaint == null &&
+                (mTopDividerHeight > 0 || mBottomDividerHeight > 0 || mLeftDividerWidth > 0 || mRightDividerWidth > 0)) {
             mDividerPaint = new Paint();
         }
+        canvas.save();
+        canvas.translate(owner.getScrollX(), owner.getScrollY());
         if (mTopDividerHeight > 0) {
             mDividerPaint.setStrokeWidth(mTopDividerHeight);
             mDividerPaint.setColor(mTopDividerColor);
             if (mTopDividerAlpha < 255) {
                 mDividerPaint.setAlpha(mTopDividerAlpha);
             }
-            float y = mTopDividerHeight * 1f / 2;
+            float y = mTopDividerHeight / 2f;
             canvas.drawLine(mTopDividerInsetLeft, y, w - mTopDividerInsetRight, y, mDividerPaint);
         }
 
@@ -642,7 +717,7 @@ public class QMUILayoutHelper implements IQMUILayout {
             if (mBottomDividerAlpha < 255) {
                 mDividerPaint.setAlpha(mBottomDividerAlpha);
             }
-            float y = (float) Math.floor(h - mBottomDividerHeight * 1f / 2);
+            float y = (float) Math.floor(h - mBottomDividerHeight / 2f);
             canvas.drawLine(mBottomDividerInsetLeft, y, w - mBottomDividerInsetRight, y, mDividerPaint);
         }
 
@@ -652,7 +727,8 @@ public class QMUILayoutHelper implements IQMUILayout {
             if (mLeftDividerAlpha < 255) {
                 mDividerPaint.setAlpha(mLeftDividerAlpha);
             }
-            canvas.drawLine(0, mLeftDividerInsetTop, 0, h - mLeftDividerInsetBottom, mDividerPaint);
+            float x = mLeftDividerWidth / 2f;
+            canvas.drawLine(x, mLeftDividerInsetTop, x, h - mLeftDividerInsetBottom, mDividerPaint);
         }
 
         if (mRightDividerWidth > 0) {
@@ -661,8 +737,10 @@ public class QMUILayoutHelper implements IQMUILayout {
             if (mRightDividerAlpha < 255) {
                 mDividerPaint.setAlpha(mRightDividerAlpha);
             }
-            canvas.drawLine(w, mRightDividerInsetTop, w, h - mRightDividerInsetBottom, mDividerPaint);
+            float x = (float) Math.floor(w - mRightDividerWidth / 2f);
+            canvas.drawLine(x, mRightDividerInsetTop, x, h - mRightDividerInsetBottom, mDividerPaint);
         }
+        canvas.restore();
     }
 
 
@@ -671,6 +749,7 @@ public class QMUILayoutHelper implements IQMUILayout {
         if (owner == null) {
             return;
         }
+
         boolean needCheckFakeOuterNormalDraw = mRadius > 0 && !useFeature() && mOuterNormalColor != 0;
         boolean needDrawBorder = mBorderWidth > 0 && mBorderColor != 0;
         if (!needCheckFakeOuterNormalDraw && !needDrawBorder) {
@@ -682,18 +761,21 @@ public class QMUILayoutHelper implements IQMUILayout {
         }
 
         int width = canvas.getWidth(), height = canvas.getHeight();
+        canvas.save();
+        canvas.translate(owner.getScrollX(), owner.getScrollY());
 
         // react
+        float halfBorderWith = mBorderWidth / 2f;
         if (mIsOutlineExcludePadding) {
             mBorderRect.set(
-                    owner.getPaddingLeft(),
-                    owner.getPaddingTop(),
-                    width - owner.getPaddingRight(),
-                    height - owner.getPaddingBottom());
+                    owner.getPaddingLeft() + halfBorderWith,
+                    owner.getPaddingTop() + halfBorderWith,
+                    width - owner.getPaddingRight() - halfBorderWith,
+                    height - owner.getPaddingBottom() - halfBorderWith);
         } else {
-            mBorderRect.set(0, 0, width, height);
+            mBorderRect.set(halfBorderWith, halfBorderWith,
+                    width- halfBorderWith, height - halfBorderWith);
         }
-
 
         if (needCheckFakeOuterNormalDraw) {
             int layerId = canvas.saveLayer(0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);
@@ -722,6 +804,7 @@ public class QMUILayoutHelper implements IQMUILayout {
                 canvas.drawRoundRect(mBorderRect, mRadius, mRadius, mClipPaint);
             }
         }
+        canvas.restore();
     }
 
     private void drawRoundRect(Canvas canvas, RectF rect, float[] radiusArray, Paint paint) {
@@ -734,5 +817,4 @@ public class QMUILayoutHelper implements IQMUILayout {
     public static boolean useFeature() {
         return Build.VERSION.SDK_INT >= 21;
     }
-
 }

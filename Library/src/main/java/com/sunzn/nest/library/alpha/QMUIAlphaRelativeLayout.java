@@ -18,24 +18,24 @@ package com.sunzn.nest.library.alpha;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 /**
  * 在 pressed 和 disabled 时改变 View 的透明度
  */
-public class QMUIAlphaLinearLayout extends LinearLayout implements QMUIAlphaViewInf {
+public class QMUIAlphaRelativeLayout extends RelativeLayout implements QMUIAlphaViewInf {
 
     private QMUIAlphaViewHelper mAlphaViewHelper;
 
-    public QMUIAlphaLinearLayout(Context context) {
+    public QMUIAlphaRelativeLayout(Context context) {
         super(context);
     }
 
-    public QMUIAlphaLinearLayout(Context context, AttributeSet attrs) {
+    public QMUIAlphaRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public QMUIAlphaLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public QMUIAlphaRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

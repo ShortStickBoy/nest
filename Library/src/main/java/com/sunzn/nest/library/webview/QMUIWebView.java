@@ -331,7 +331,8 @@ public class QMUIWebView extends WebView implements IWindowInsetLayout {
 
     private Method getSetDisplayCutoutSafeAreaMethodInWebContents(Object webContents) {
         try {
-            Method setDisplayCutoutSafeAreaMethod = webContents.getClass().getDeclaredMethod("setDisplayCutoutSafeArea", Rect.class);
+            Method setDisplayCutoutSafeAreaMethod = webContents.getClass()
+                    .getDeclaredMethod("setDisplayCutoutSafeArea", Rect.class);
             if (setDisplayCutoutSafeAreaMethod != null) {
                 return setDisplayCutoutSafeAreaMethod;
             }
@@ -341,7 +342,8 @@ public class QMUIWebView extends WebView implements IWindowInsetLayout {
         // Unfortunately, the source code is ugly in some roms, so we can not reflect the field/method by name
         // not very safe in future
         for (Method method : webContents.getClass().getDeclaredMethods()) {
-            if (method.getReturnType() == void.class && method.getParameterTypes().length == 1 && method.getParameterTypes()[0] == Rect.class) {
+            if (method.getReturnType() == void.class && method.getParameterTypes().length == 1 &&
+                    method.getParameterTypes()[0] == Rect.class) {
                 return method;
             }
         }

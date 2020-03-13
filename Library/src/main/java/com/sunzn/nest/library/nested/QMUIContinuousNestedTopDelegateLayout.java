@@ -65,7 +65,8 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
         this(context, attrs, 0);
     }
 
-    public QMUIContinuousNestedTopDelegateLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public QMUIContinuousNestedTopDelegateLayout(@NonNull Context context,
+                                                 @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         mParentHelper = new NestedScrollingParentHelper(this);
@@ -170,6 +171,10 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
             mFooterViewOffsetHelper.onViewLayout();
             mOffsetCurrent = -mFooterViewOffsetHelper.getTopAndBottomOffset();
         }
+
+        if (mOffsetCurrent > mOffsetRange) {
+            offsetTo(mOffsetRange);
+        }
         postCheckLayout();
     }
 
@@ -197,9 +202,11 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
                 mDelegateView.consumeScroll(-over);
                 offsetTo(headerOffsetRange);
             }
+
         }
 
-        if (mOffsetCurrent > headerOffsetRange && delegateCurrentScroll < delegateScrollRange && mFooterView != null) {
+        if (mOffsetCurrent > headerOffsetRange && delegateCurrentScroll < delegateScrollRange
+                && mFooterView != null) {
             int over = mOffsetCurrent - headerOffsetRange;
             int delegateRemain = delegateScrollRange - delegateCurrentScroll;
             if (over >= delegateRemain) {
@@ -282,7 +289,8 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
                 }
                 return dyUnconsumed;
             } else {
-                int beforeRange = Math.min(mOffsetRange, getPaddingTop() + (mHeaderView == null ? 0 : mHeaderView.getHeight()));
+                int beforeRange = Math.min(mOffsetRange,
+                        getPaddingTop() + (mHeaderView == null ? 0 : mHeaderView.getHeight()));
                 if (dyUnconsumed == Integer.MAX_VALUE) {
                     offsetTo(beforeRange);
                 } else if (mOffsetCurrent + dyUnconsumed <= beforeRange) {
@@ -320,7 +328,8 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
                 }
                 return dyUnconsumed;
             }
-            int afterRange = Math.max(0, mOffsetRange - getPaddingBottom() - (mFooterView == null ? 0 : mFooterView.getHeight()));
+            int afterRange = Math.max(0,
+                    mOffsetRange - getPaddingBottom() - (mFooterView == null ? 0 : mFooterView.getHeight()));
             if (dyUnconsumed == Integer.MIN_VALUE) {
                 offsetTo(afterRange);
             } else if (mOffsetCurrent + dyUnconsumed > afterRange) {
@@ -418,12 +427,15 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
     }
 
     @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow, int type) {
-        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type);
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
+                                        int dyUnconsumed, int[] offsetInWindow, int type) {
+        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+                offsetInWindow, type);
     }
 
     @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow, int type) {
+    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow,
+                                           int type) {
         return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
 
@@ -455,8 +467,10 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
     }
 
     @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
-        return dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, ViewCompat.TYPE_TOUCH);
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
+                                        int dyUnconsumed, int[] offsetInWindow) {
+        return dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+                offsetInWindow, ViewCompat.TYPE_TOUCH);
     }
 
     @Override
@@ -477,12 +491,14 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
     // NestedScrollingParent2
 
     @Override
-    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int axes, int type) {
+    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int axes,
+                                       int type) {
         return (axes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
     @Override
-    public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int axes, int type) {
+    public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int axes,
+                                       int type) {
         mParentHelper.onNestedScrollAccepted(child, target, axes, type);
         startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, type);
     }
@@ -494,7 +510,8 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
     }
 
     @Override
-    public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
+                               int dyUnconsumed, int type) {
         int consumed = 0;
         if (dyUnconsumed > 0) {
             if (mOffsetCurrent + dyUnconsumed <= mOffsetRange) {
@@ -513,11 +530,13 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
                 offsetTo(0);
             }
         }
-        dispatchNestedScroll(0, dyConsumed + consumed, 0, dyUnconsumed - consumed, null, type);
+        dispatchNestedScroll(0, dyConsumed + consumed, 0,
+                dyUnconsumed - consumed, null, type);
     }
 
     @Override
-    public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+    public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed,
+                                  int type) {
         dispatchNestedPreScroll(dx, dy, consumed, null, type);
         int unconsumed = dy - consumed[1];
         if (unconsumed > 0) {
@@ -545,37 +564,39 @@ public class QMUIContinuousNestedTopDelegateLayout extends FrameLayout implement
     // NestedScrollingParent
 
     @Override
-    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
         return onStartNestedScroll(child, target, nestedScrollAxes, ViewCompat.TYPE_TOUCH);
     }
 
     @Override
-    public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
+    public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes) {
         onNestedScrollAccepted(child, target, nestedScrollAxes, ViewCompat.TYPE_TOUCH);
     }
 
     @Override
-    public void onStopNestedScroll(@NonNull View target) {
+    public void onStopNestedScroll(View target) {
         onStopNestedScroll(target, ViewCompat.TYPE_TOUCH);
     }
 
     @Override
-    public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, ViewCompat.TYPE_TOUCH);
+    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
+                               int dyUnconsumed) {
+        onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
+                ViewCompat.TYPE_TOUCH);
     }
 
     @Override
-    public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed) {
+    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
         onNestedPreScroll(target, dx, dy, consumed, ViewCompat.TYPE_TOUCH);
     }
 
     @Override
-    public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
+    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
         return false;
     }
 
     @Override
-    public boolean onNestedPreFling(@NonNull View target, float velocityX, float velocityY) {
+    public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
         return dispatchNestedPreFling(velocityX, velocityY);
     }
 

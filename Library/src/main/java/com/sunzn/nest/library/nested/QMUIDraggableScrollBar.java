@@ -48,7 +48,11 @@ import com.sunzn.nest.library.R;
 import com.sunzn.nest.library.util.QMUIDisplayHelper;
 import com.sunzn.nest.library.util.QMUILangHelper;
 
+
 public class QMUIDraggableScrollBar extends View {
+
+    private int[] STATE_PRESSED = new int[]{android.R.attr.state_pressed};
+    private int[] STATE_NORMAL = new int[]{};
 
     private Drawable mDragDrawable;
     private int mKeepShownTime = 800;
@@ -68,6 +72,7 @@ public class QMUIDraggableScrollBar extends View {
     private float mDragInnerTop = 0;
     private int mAdjustDistanceProtection = QMUIDisplayHelper.dp2px(getContext(), 20);
     private int mAdjustMaxDistanceOnce = QMUIDisplayHelper.dp2px(getContext(), 4);
+    private boolean enableFadeInAndOut = true;
 
     public QMUIDraggableScrollBar(Context context) {
         this(context, (AttributeSet) null);
@@ -94,6 +99,14 @@ public class QMUIDraggableScrollBar extends View {
         mTransitionDuration = transitionDuration;
     }
 
+    public void setEnableFadeInAndOut(boolean enableFadeInAndOut) {
+        this.enableFadeInAndOut = enableFadeInAndOut;
+    }
+
+    public boolean isEnableFadeInAndOut() {
+        return enableFadeInAndOut;
+    }
+
     public void setDragDrawable(Drawable dragDrawable) {
         mDragDrawable = dragDrawable.mutate();
         invalidate();
@@ -117,7 +130,8 @@ public class QMUIDraggableScrollBar extends View {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
-        super.onMeasure(MeasureSpec.makeMeasureSpec(drawable.getIntrinsicWidth(), MeasureSpec.EXACTLY), heightMeasureSpec);
+        super.onMeasure(MeasureSpec.makeMeasureSpec(
+                drawable.getIntrinsicWidth(), MeasureSpec.EXACTLY), heightMeasureSpec);
     }
 
     @Override
@@ -131,12 +145,14 @@ public class QMUIDraggableScrollBar extends View {
         final float y = event.getY();
         if (action == MotionEvent.ACTION_DOWN) {
             mIsInDragging = false;
-            if (mCurrentAlpha > 0 && x > getWidth() - drawable.getIntrinsicWidth() && y >= mDrawableDrawTop && y <= mDrawableDrawTop + drawable.getIntrinsicHeight()) {
+            if (mCurrentAlpha > 0 && x > getWidth() - drawable.getIntrinsicWidth()
+                    && y >= mDrawableDrawTop && y <= mDrawableDrawTop + drawable.getIntrinsicHeight()) {
                 mDragInnerTop = y - mDrawableDrawTop;
                 getParent().requestDisallowInterceptTouchEvent(true);
                 mIsInDragging = true;
                 if (mCallback != null) {
                     mCallback.onDragStarted();
+                    mDragDrawable.setState(STATE_PRESSED);
                 }
             }
         } else if (action == MotionEvent.ACTION_MOVE) {
@@ -150,6 +166,7 @@ public class QMUIDraggableScrollBar extends View {
                 onDragging(drawable, y);
                 if (mCallback != null) {
                     mCallback.onDragEnd();
+                    mDragDrawable.setState(STATE_NORMAL);
                 }
             }
         }
@@ -188,28 +205,35 @@ public class QMUIDraggableScrollBar extends View {
         if (drawableWidth <= 0 || drawableHeight <= 0) {
             return;
         }
-        long timeAfterStartShow = System.currentTimeMillis() - mStartTransitionTime;
-        long timeAfterEndShow;
+
         int needInvalidate = -1;
-        if (timeAfterStartShow < mTransitionDuration) {
-            // in show animation
-            mCurrentAlpha = timeAfterStartShow * 1f / mTransitionDuration;
-            needInvalidate = 0;
-        } else if (timeAfterStartShow - mTransitionDuration < mKeepShownTime) {
-            // keep show
-            mCurrentAlpha = 1f;
-            needInvalidate = (int) (mKeepShownTime - (timeAfterStartShow - mTransitionDuration));
-        } else if ((timeAfterEndShow = timeAfterStartShow - mTransitionDuration - mKeepShownTime) < mTransitionDuration) {
-            // in hide animation
-            mCurrentAlpha = 1 - timeAfterEndShow * 1f / mTransitionDuration;
-            needInvalidate = 0;
+        if (enableFadeInAndOut) {
+            long timeAfterStartShow = System.currentTimeMillis() - mStartTransitionTime;
+            long timeAfterEndShow;
+            if (timeAfterStartShow < mTransitionDuration) {
+                // in show animation
+                mCurrentAlpha = timeAfterStartShow * 1f / mTransitionDuration;
+                needInvalidate = 0;
+            } else if (timeAfterStartShow - mTransitionDuration < mKeepShownTime) {
+                // keep show
+                mCurrentAlpha = 1f;
+                needInvalidate = (int) (mKeepShownTime - (timeAfterStartShow - mTransitionDuration));
+            } else if ((timeAfterEndShow = timeAfterStartShow - mTransitionDuration - mKeepShownTime)
+                    < mTransitionDuration) {
+                // in hide animation
+                mCurrentAlpha = 1 - timeAfterEndShow * 1f / mTransitionDuration;
+                needInvalidate = 0;
+            } else {
+                mCurrentAlpha = 0f;
+            }
+            if (mCurrentAlpha <= 0f) {
+                return;
+            }
         } else {
-            mCurrentAlpha = 0f;
-        }
-        if (mCurrentAlpha <= 0f) {
-            return;
+            mCurrentAlpha = 1f;
         }
         drawable.setAlpha((int) (mCurrentAlpha * 255));
+
         int totalHeight = getHeight() - getScrollBarTopMargin() - getScrollBarBottomMargin();
         int totalWidth = getWidth();
         int top = getScrollBarTopMargin() + (int) ((totalHeight - drawableHeight) * mPercent);

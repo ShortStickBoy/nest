@@ -56,8 +56,10 @@ public class QMUIAlphaViewHelper {
     }
 
     /**
+     * 在 {@link View#setPressed(boolean)} 中调用，通知 helper 更新
+     *
      * @param current the view to be handled, maybe not equal to target view
-     * @param pressed
+     * @param pressed {@link View#setPressed(boolean)} 中接收到的参数
      */
     public void onPressedChanged(View current, boolean pressed) {
         View target = mTarget.get();
@@ -74,8 +76,10 @@ public class QMUIAlphaViewHelper {
     }
 
     /**
+     * 在 {@link View#setEnabled(boolean)} 中调用，通知 helper 更新
+     *
      * @param current the view to be handled, maybe not  equal to target view
-     * @param enabled
+     * @param enabled {@link View#setEnabled(boolean)} 中接收到的参数
      */
     public void onEnabledChanged(View current, boolean enabled) {
         View target = mTarget.get();
@@ -114,6 +118,7 @@ public class QMUIAlphaViewHelper {
         if (target != null) {
             onEnabledChanged(target, target.isEnabled());
         }
+
     }
 
 }
