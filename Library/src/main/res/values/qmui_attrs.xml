@@ -38,9 +38,6 @@
         <attr name="qmui_rightDividerColor" format="color|reference"/>
         <attr name="qmui_rightDividerInsetTop" format="dimension"/>
         <attr name="qmui_rightDividerInsetBottom" format="dimension"/>
-        <attr name="qmui_radius"/>
-        <attr name="qmui_borderColor"/>
-        <attr name="qmui_borderWidth"/>
         <attr name="qmui_outerNormalColor" format="color|reference"/>
         <attr name="qmui_hideRadiusSide" format="enum">
             <enum name="none" value="0"/>
@@ -58,6 +55,15 @@
         <attr name="qmui_outlineInsetRight" format="dimension"/>
         <attr name="qmui_outlineInsetBottom" format="dimension"/>
         <attr name="qmui_outlineExcludePadding" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="QMUIPriorityLinearLayout_Layout">
+        <attr name="qmui_layout_priority" format="enum">
+            <enum name="disposable" value="1"/>
+            <enum name="mini_content_protection" value="2"/>
+            <enum name="incompressible" value="3"/>
+        </attr>
+        <attr name="qmui_layout_miniContentProtectionSize" format="dimension"/>
     </declare-styleable>
 
 </resources>
