@@ -3,7 +3,6 @@ package com.sunzn.nest.sample;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -95,6 +94,16 @@ public class NestedActivity1 extends AppCompatActivity {
                 "Apron", "Carpet", "Bolster", "Pillow", "Cushion"));
         Collections.shuffle(data);
         mAdapter.setData(data);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mNestedWebView != null) {
+            mCoordinatorLayout.removeView(mNestedWebView);
+            mNestedWebView.destroy();
+            mNestedWebView = null;
+        }
     }
 
 }
