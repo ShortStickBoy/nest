@@ -17,6 +17,7 @@
 package com.sunzn.nest.library.webview;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -58,20 +59,24 @@ public class QMUIWebView extends WebView implements IWindowInsetLayout {
     private List<OnScrollChangeListener> mOnScrollChangeListeners = new ArrayList<>();
     private QMUIWindowInsetHelper mWindowInsetHelper;
 
-
     public QMUIWebView(Context context) {
-        super(context);
+        super(getFixedContext(context));
         init();
     }
 
     public QMUIWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(getFixedContext(context), attrs);
         init();
     }
 
     public QMUIWebView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(getFixedContext(context), attrs, defStyleAttr);
         init();
+    }
+
+    // Android Lollipop 5.0 & 5.1
+    private static Context getFixedContext(Context context) {
+        return Build.VERSION.SDK_INT == 21 || Build.VERSION.SDK_INT == 22 ? context.createConfigurationContext(new Configuration()) : context;
     }
 
     private void init() {
