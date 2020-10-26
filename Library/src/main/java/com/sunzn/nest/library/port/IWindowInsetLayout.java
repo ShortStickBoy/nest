@@ -18,13 +18,12 @@ package com.sunzn.nest.library.port;
 
 import android.graphics.Rect;
 
-/**
- * @author cginechen
- * @date 2017-09-13
- */
+import androidx.core.view.WindowInsetsCompat;
 
 public interface IWindowInsetLayout {
+
     boolean applySystemWindowInsets19(Rect insets);
 
-    boolean applySystemWindowInsets21(Object insets);
+    WindowInsetsCompat applySystemWindowInsets21(WindowInsetsCompat insets);
+
 }

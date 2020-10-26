@@ -68,9 +68,11 @@ public class QMUIWindowInsetHelper {
                 @Override
                 public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
                     if (Build.VERSION.SDK_INT >= 21 && mWindowInsetLayoutWR.get() != null) {
-                        if (mWindowInsetLayoutWR.get().applySystemWindowInsets21(insets)) {
-                            return insets.consumeSystemWindowInsets();
-                        }
+
+//                        if (mWindowInsetLayoutWR.get().applySystemWindowInsets21(insets)) {
+//                            return insets.consumeSystemWindowInsets();
+//                        }
+                        return mWindowInsetLayoutWR.get().applySystemWindowInsets21(insets);
                     }
                     return insets;
                 }
@@ -84,14 +86,14 @@ public class QMUIWindowInsetHelper {
         viewGroup.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
-                if (mWindowInsetLayoutWR.get() != null && mWindowInsetLayoutWR.get().applySystemWindowInsets21(windowInsets)) {
-                    windowInsets = windowInsets.consumeSystemWindowInsets();
-                    DisplayCutout displayCutout = windowInsets.getDisplayCutout();
-                    if (displayCutout != null) {
-                        windowInsets = windowInsets.consumeDisplayCutout();
-                    }
-                    return windowInsets;
-                }
+//                if (mWindowInsetLayoutWR.get() != null && mWindowInsetLayoutWR.get().applySystemWindowInsets21(windowInsets)) {
+//                    windowInsets = windowInsets.consumeSystemWindowInsets();
+//                    DisplayCutout displayCutout = windowInsets.getDisplayCutout();
+//                    if (displayCutout != null) {
+//                        windowInsets = windowInsets.consumeDisplayCutout();
+//                    }
+//                    return windowInsets;
+//                }
                 return windowInsets;
             }
         });
